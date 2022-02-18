@@ -13,8 +13,8 @@ exports_*
 imports_*
 state.json
 
-static/
-staticfiles/
+#static/
+#staticfiles/
 node_modules/
 .idea/
 
