@@ -3,7 +3,7 @@ from datetime import timedelta
 import os
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 AWS_ACCESS_KEY_ID=os.environ['DUKE_RAINFOREST_AWS_ACCESS_KEY']
 AWS_SECRET_ACCESS_KEY=os.environ['DUKE_RAINFOREST_AWS_SECRET_KEY']
