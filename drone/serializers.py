@@ -14,6 +14,7 @@ class AddObservationSerializer(serializers.ModelSerializer):
             'longitude',
             'heading',
             'altitude',
+            'altitude_above_ground',
             'description',
             'photo',
         ]
@@ -21,7 +22,12 @@ class AddObservationSerializer(serializers.ModelSerializer):
 
 class GetObservationsSerializer(serializers.ModelSerializer):
     
+    photo_href = serializers.SerializerMethodField() 
+    def get_photo_href(self, obj):
+        return f'https://d2dr0xu4tpg6v2.cloudfront.net/{obj.photo_s3_object_key}'
+
     class Meta:
         model = DroneObservation
-        fields = '__all__'
+        #fields = '__all__'
+        exclude = ['photo_s3_object_key']
 

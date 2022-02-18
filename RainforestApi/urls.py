@@ -7,4 +7,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('drone/', include('drone.urls')),
     path('jet/', include('jet.urls', 'jet')),
+    path('web/', include('web.urls')),
 ]

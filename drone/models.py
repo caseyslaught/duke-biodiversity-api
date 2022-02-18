@@ -16,7 +16,11 @@ class DroneObservation(models.Model):
     longitude = models.DecimalField(max_digits=9, decimal_places=6)
     heading = models.DecimalField(max_digits=5, decimal_places=2, null=True)
     altitude = models.IntegerField(null=True) # meters?
+    altitude_above_ground = models.IntegerField(null=True) # meters?
     description = models.TextField(blank=True, null=True)
+
+    category = models.CharField(max_length=100, blank=True, null=True) # Birds, Mammals, Plants
+    level = models.CharField(max_length=100, blank=True, null=True) # Floor, Understory, Canopy
 
     # TODO: key to species or drone-vehicle
 

@@ -11,7 +11,7 @@ class AuthTestView(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        return Response(status=status.HTTP_200_OK)
+        return Response({'message': 'hello'}, status=status.HTTP_200_OK)
 
     def post(self, request):
         return Response(status=status.HTTP_200_OK)
