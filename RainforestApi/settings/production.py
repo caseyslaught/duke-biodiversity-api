@@ -4,7 +4,10 @@ from RainforestApi.settings.base import *
 
 
 DEBUG = True
-ALLOWED_HOSTS = ['rainforest-production.eba-tgpybk9s.us-east-1.elasticbeanstalk.com']
+ALLOWED_HOSTS = [
+    'd230bmyzll7rz7.cloudfront.net', 
+    'rainforest-production.eba-tgpybk9s.us-east-1.elasticbeanstalk.com'
+]
 
 SECRET_KEY = os.environ['DUKE_RAINFOREST_SECRET']
 
