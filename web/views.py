@@ -28,10 +28,13 @@ class GetObservationsView(generics.GenericAPIView):
         data = dict()
 
         if 'Acoustic' in methods:
-            pass
+            data['Acoustic'] = []
 
         if 'Camera trap' in methods:
-            pass
+            data['Camera trap'] = []
+
+        if 'DNA' in methods:
+            data['DNA'] = []
 
         if 'Drone' in methods:
             drone_obs = DroneObservation.objects.filter(
@@ -39,7 +42,7 @@ class GetObservationsView(generics.GenericAPIView):
                 Q(level__in=levels) | Q(level='') | Q(level__isnull=True)
             ).all()
             drone_ser = GetDroneObsSerializer(drone_obs, many=True)
-            data['drone'] = drone_ser.data
+            data['Drone'] = drone_ser.data
 
 
         return Response(data, status=status.HTTP_200_OK)
