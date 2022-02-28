@@ -1,12 +1,15 @@
+from unicodedata import category
 from django.conf import settings
 from django.db.models import Q
 from rest_framework import permissions, status, generics
 from rest_framework.response import Response
 import os
 
-from web import serializers
+from camera_trap.models import CameraTrapObservation
+from camera_trap.serializers import GetObservationsSerializer as GetCameraTrapObsSerializer
 from drone.models import DroneObservation
 from drone.serializers import GetObservationsSerializer as GetDroneObsSerializer
+from web import serializers
 
 
 class GetObservationsView(generics.GenericAPIView):
@@ -21,9 +24,9 @@ class GetObservationsView(generics.GenericAPIView):
 
         filters = serializer.data
 
-        categories = [cat for cat in filters['categories'].split(',') if cat != '']
-        methods = [met for met in filters['methods'].split(',') if met != '']
-        levels = [lev for lev in filters['levels'].split(',') if lev != '']
+        categories = [c for c in filters['categories'].split(',') if c != '']
+        methods = [m for m in filters['methods'].split(',') if m != '']
+        levels = [l for l in filters['levels'].split(',') if l != '']
 
         data = dict()
 
@@ -31,7 +34,12 @@ class GetObservationsView(generics.GenericAPIView):
             data['Acoustic'] = []
 
         if 'Camera trap' in methods:
-            data['Camera trap'] = []
+            camera_obs = CameraTrapObservation.objects.filter(
+                Q(category__in=categories) | Q(category='') | Q(category__isnull=True),
+                Q(level__in=levels) | Q(level='') | Q(level__isnull=True)
+            )
+            camera_ser = GetCameraTrapObsSerializer(camera_obs, many=True)
+            data['Camera trap'] = camera_ser.data
 
         if 'DNA' in methods:
             data['DNA'] = []

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from drone.models import DroneObservation
+from camera_trap.models import CameraTrapObservation
+
 
 
 class AddObservationSerializer(serializers.ModelSerializer):
@@ -8,7 +9,7 @@ class AddObservationSerializer(serializers.ModelSerializer):
     photo = serializers.ImageField(allow_empty_file=False)
 
     class Meta:
-        model = DroneObservation
+        model = CameraTrapObservation
         fields = [
             'latitude',
             'longitude',
@@ -28,10 +29,9 @@ class GetObservationsSerializer(serializers.ModelSerializer):
 
     method = serializers.SerializerMethodField()
     def get_method(self, obj):
-        return "Drone"
+        return "Camera trap"
 
     class Meta:
-        model = DroneObservation
+        model = CameraTrapObservation
         #fields = '__all__'
         exclude = ['id', 'photo_s3_object_key']
-
