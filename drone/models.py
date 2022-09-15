@@ -4,6 +4,15 @@ import uuid
 from RainforestApi.common import get_utc_datetime_now
 
 
+class DroneFlight(models.Model):
+
+    datetime_created = models.DateTimeField(default=get_utc_datetime_now)
+    datetime_updated = models.DateTimeField(null=True)
+    uid = models.UUIDField(unique=True, editable=False, default=uuid.uuid4)
+
+    geojson = models.TextField(blank=True, null=True) # LineString
+
+
 class DroneObservation(models.Model):
 
     datetime_created = models.DateTimeField(default=get_utc_datetime_now)
@@ -22,9 +31,10 @@ class DroneObservation(models.Model):
     category = models.CharField(max_length=100, blank=True, null=True) # Birds, Mammals, Plants
     level = models.CharField(max_length=100, blank=True, null=True) # Floor, Understory, Canopy
 
-    # TODO: key to species or drone-vehicle
+    flight = models.ForeignKey(DroneFlight, on_delete=models.CASCADE, null=True)
 
     class Meta:
         ordering = ['datetime_created']
+
 
 

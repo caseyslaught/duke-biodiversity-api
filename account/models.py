@@ -49,3 +49,15 @@ class Client(AbstractBaseUser, PermissionsMixin):
         verbose_name = 'client'
         verbose_name_plural = 'clients'
 
+
+
+class Project(models.Model):
+    
+    datetime_created = models.DateTimeField(default=get_utc_datetime_now)
+    datetime_updated = models.DateTimeField(null=True)
+    uid = models.UUIDField(unique=True, editable=False, default=uuid.uuid4)
+
+    name = models.CharField(max_length=200, blank=True, null=True)
+    country = models.CharField(max_length=100, blank=True, null=True)
+    creator = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
+
