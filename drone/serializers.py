@@ -6,6 +6,7 @@ from drone.models import DroneFlight, DroneObservation
 class AddFlightSerializer(serializers.ModelSerializer):
 
     class Meta:
+        ref_name = 'DroneAddFlightSerializer'
         model = DroneFlight
         fields = ['geojson']
 
@@ -16,6 +17,7 @@ class AddObservationSerializer(serializers.ModelSerializer):
     photo = serializers.ImageField(allow_empty_file=False)
 
     class Meta:
+        ref_name = 'DroneGetObservationSerializer'
         model = DroneObservation
         fields = [
             'latitude',
@@ -24,6 +26,7 @@ class AddObservationSerializer(serializers.ModelSerializer):
             'altitude',
             'altitude_above_ground',
             'description',
+            'flight_uid',
             'photo',
         ]
 
@@ -31,6 +34,7 @@ class AddObservationSerializer(serializers.ModelSerializer):
 class GetFlightsSerializer(serializers.ModelSerializer):
 
     class Meta:
+        ref_name = 'DroneGetFlightsSerializer'
         model = DroneFlight
         fields = ['uid', 'datetime_created', 'geojson']
 
@@ -46,6 +50,7 @@ class GetObservationsSerializer(serializers.ModelSerializer):
         return "Drone"
 
     class Meta:
+        ref_name = 'DroneGetObservationsSerializer'
         model = DroneObservation
         #fields = '__all__'
         exclude = ['id', 'photo_s3_object_key']

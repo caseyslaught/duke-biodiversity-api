@@ -1,7 +1,6 @@
 from django.contrib.auth import authenticate
 from rest_framework import generics, permissions, status, views
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from account import serializers
 

@@ -9,6 +9,7 @@ class AddObservationSerializer(serializers.ModelSerializer):
     photo = serializers.ImageField(allow_empty_file=False)
 
     class Meta:
+        ref_name = 'CameraTrapAddObservationSerializer'
         model = CameraTrapObservation
         fields = [
             'latitude',
@@ -32,6 +33,7 @@ class GetObservationsSerializer(serializers.ModelSerializer):
         return "Camera trap"
 
     class Meta:
+        ref_name = 'CameraTrapGetObservationsSerializer'
         model = CameraTrapObservation
         #fields = '__all__'
         exclude = ['id', 'photo_s3_object_key']
