@@ -3,15 +3,17 @@ from rest_framework import serializers
 from drone.models import DroneFlight, DroneObservation
 
 
-class AddFlightSerializer(serializers.ModelSerializer):
+class CreateFlightSerializer(serializers.Serializer):
+
+    drone_id = serializers.CharField()
+    pilot_name = serializers.CharField()
+    log_file = serializers.FileField(allow_empty_file=False)
 
     class Meta:
         ref_name = 'DroneAddFlightSerializer'
-        model = DroneFlight
-        fields = ['geojson']
 
 
-class AddObservationSerializer(serializers.ModelSerializer):
+class CreateObservationSerializer(serializers.ModelSerializer):
     
     flight_uid = serializers.UUIDField()
     photo = serializers.ImageField(allow_empty_file=False)
@@ -36,7 +38,7 @@ class GetFlightsSerializer(serializers.ModelSerializer):
     class Meta:
         ref_name = 'DroneGetFlightsSerializer'
         model = DroneFlight
-        fields = ['uid', 'datetime_created', 'geojson']
+        fields = ['uid', 'datetime_created', 'pilot_name', 'flight_path']
 
 
 class GetObservationsSerializer(serializers.ModelSerializer):

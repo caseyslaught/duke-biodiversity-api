@@ -5,52 +5,38 @@ from rest_framework import permissions, status, generics
 from rest_framework.response import Response
 
 from drone import serializers
-from drone.models import DroneFlight, DroneObservation
+from drone.models import DroneFlight, DroneObservation, DroneVehicle
 from RainforestApi.common.aws import s3
 
 
-class AddFlightView(generics.GenericAPIView):
+class CreateFlightView(generics.GenericAPIView):
 
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = serializers.AddFlightSerializer
+    permission_classes = [permissions.AllowAny] # IsAuthenticated disabled for now
+    serializer_class = serializers.CreateFlightSerializer
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         data = serializer.validated_data
-        geojson = data.get('geojson')
+        drone_id = data['drone_id']
+        pilot_name = data['pilot_name']
+        log_file = data['log_file']
 
-        flight = DroneFlight.objects.create()
+        try:
+            drone = DroneVehicle.objects.get(drone_id=drone_id)
+        except DroneVehicle.DoesNotExist:
+            drone = DroneVehicle.objects.create(drone_id=drone_id)
 
-        if geojson:
-            geojson = json.loads(geojson)
-            print(geojson)
-            features = geojson['features']
-            if len(features) > 1:
-                flight.delete()
-                return Response({
-                    'error': 'maximum_one_feature',
-                    'detail': 'You can only add one feature.'
-                }, status=status.HTTP_400_BAD_REQUEST)
-
-            if features[0]['geometry']['type'] != "LineString":
-                flight.delete()
-                return Response({
-                    'error': 'linestring_required',
-                    'detail': 'The feature must be a LineString.'
-                }, status=status.HTTP_400_BAD_REQUEST)
-
-            flight.geojson = data['geojson']
-            flight.save()
+        flight = DroneFlight.objects.create(drone=drone, pilot_name=pilot_name) # TODO: add flight_path
 
         return Response({'flight_uid': flight.uid}, status=status.HTTP_201_CREATED)
 
 
-class AddObservationView(generics.GenericAPIView):
+class CreateObservationView(generics.GenericAPIView):
 
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = serializers.AddObservationSerializer
+    permission_classes = [permissions.AllowAny] # IsAuthenticated disabled for now
+    serializer_class = serializers.CreateObservationSerializer
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -62,9 +48,9 @@ class AddObservationView(generics.GenericAPIView):
         photo = data.pop('photo')
 
         try:
-            flight = DroneFlight.get(uid=flight_uid)
+            flight = DroneFlight.objects.get(uid=flight_uid)
         except DroneFlight.DoesNotExist:
-            flight = DroneFlight.objects.create()
+            return Response({'error': 'flight_not_found'}, status=status.HTTP_400_BAD_REQUEST)
 
         o_root, o_ext = os.path.splitext(photo.name)
         o_ext = o_ext.lower()
@@ -74,6 +60,7 @@ class AddObservationView(generics.GenericAPIView):
                 'detail': 'image file extensions supported: .jpg, .jpeg, .png'
             }, status=status.HTTP_400_BAD_REQUEST)
 
+        # TODO: get lat/lon/alt from photo exif data
         observation = DroneObservation.objects.create(**data)
 
         photo_s3_object_key = f'{settings.S3_DATA_PREFIX}/drone/{observation.uid}{o_ext}'
@@ -86,8 +73,7 @@ class AddObservationView(generics.GenericAPIView):
         s3.put_s3_item(
             body=photo.file.read(),
             bucket=settings.AWS_S3_DATA_BUCKET,
-            object_key=photo_s3_object_key,
-        )
+            object_key=photo_s3_object_key)
 
         return Response(status=status.HTTP_201_CREATED)
 
@@ -105,6 +91,8 @@ class GetObservationsView(generics.ListAPIView):
 
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = serializers.GetObservationsSerializer
+
+    # TODO: add filter for specific flight
 
     def get_queryset(self):
         return DroneObservation.objects.all()
