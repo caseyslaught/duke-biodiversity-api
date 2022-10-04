@@ -4,6 +4,8 @@ import uuid
 from RainforestApi.common import get_utc_datetime_now
 
 
+# TODO: update multiple photos for same observation...
+
 class CameraTrapObservation(models.Model):
 
     datetime_created = models.DateTimeField(default=get_utc_datetime_now)

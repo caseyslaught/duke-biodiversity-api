@@ -4,9 +4,9 @@ from drone import views
 
 urlpatterns = [
 
-    path('create_flight/', views.CreateFlightView.as_view()),
-    path('create_observation/', views.CreateObservationView.as_view()),
-    path('get_flights/', views.GetFlightsView.as_view()),
-    path('get_observations/', views.GetObservationsView.as_view())
+    path('create_flight/', views.CreateDroneFlightView.as_view()),
+    path('create_photo/', views.CreateDronePhotoView.as_view()),
+    path('get_flights/', views.GetDroneFlightsView.as_view()),
+    path('get_photos/', views.GetDronePhotosView.as_view())
     
 ]

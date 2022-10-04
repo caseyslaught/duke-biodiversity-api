@@ -1,59 +1,70 @@
 from rest_framework import serializers
 
-from drone.models import DroneFlight, DroneObservation
+from drone.models import DroneFlight, DroneObservation, DronePhoto, DroneVehicle
 
 
-class CreateFlightSerializer(serializers.Serializer):
+class CreateDroneFlightSerializer(serializers.Serializer):
 
     drone_id = serializers.CharField()
     pilot_name = serializers.CharField()
-    log_file = serializers.FileField(allow_empty_file=False)
+    # log_file = serializers.FileField(allow_empty_file=False, allow_null=True)
 
     class Meta:
         ref_name = 'DroneAddFlightSerializer'
 
 
-class CreateObservationSerializer(serializers.ModelSerializer):
+class CreateDronePhotoSerializer(serializers.ModelSerializer):
     
     flight_uid = serializers.UUIDField()
     photo = serializers.ImageField(allow_empty_file=False)
 
     class Meta:
-        ref_name = 'DroneGetObservationSerializer'
-        model = DroneObservation
+        model = DronePhoto
         fields = [
             'latitude',
             'longitude',
-            'heading',
             'altitude',
-            'altitude_above_ground',
-            'description',
             'flight_uid',
             'photo',
         ]
 
 
-class GetFlightsSerializer(serializers.ModelSerializer):
+class GetDroneVehicleSerializer(serializers.ModelSerializer):
 
     class Meta:
-        ref_name = 'DroneGetFlightsSerializer'
+        model = DroneVehicle
+        fields = [
+            "uid",
+            "name",
+            "drone_id"
+        ]
+
+
+class GetDroneFlightsSerializer(serializers.ModelSerializer):
+
+    drone = GetDroneVehicleSerializer()
+
+    class Meta:
         model = DroneFlight
-        fields = ['uid', 'datetime_created', 'pilot_name', 'flight_path']
+        fields = [
+            'uid', 
+            'datetime_created', 
+            'pilot_name', 
+            'flight_path',
+            'drone'
+        ]
 
 
-class GetObservationsSerializer(serializers.ModelSerializer):
-    
+class GetDronePhotosSerializer(serializers.ModelSerializer):
+
+    # TODO: move base url to settings
     photo_href = serializers.SerializerMethodField() 
     def get_photo_href(self, obj):
         return f'https://d2dr0xu4tpg6v2.cloudfront.net/{obj.photo_s3_object_key}'
 
-    method = serializers.SerializerMethodField()
-    def get_method(self, obj):
-        return "Drone"
-
     class Meta:
-        ref_name = 'DroneGetObservationsSerializer'
-        model = DroneObservation
-        #fields = '__all__'
+        model = DronePhoto
         exclude = ['id', 'photo_s3_object_key']
+
+
 

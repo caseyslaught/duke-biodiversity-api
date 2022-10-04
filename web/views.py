@@ -7,8 +7,8 @@ import os
 
 from camera_trap.models import CameraTrapObservation
 from camera_trap.serializers import GetObservationsSerializer as GetCameraTrapObsSerializer
-from drone.models import DroneObservation
-from drone.serializers import GetObservationsSerializer as GetDroneObsSerializer
+from drone.models import DroneObservation, DronePhoto
+from drone.serializers import GetDronePhotosSerializer
 from web import serializers
 
 
@@ -45,11 +45,15 @@ class GetObservationsView(generics.GenericAPIView):
             data['DNA'] = []
 
         if 'Drone' in methods:
+            # TODO: FIXME
+            drone_photos = DronePhoto.objects.all()
+            """            
             drone_obs = DroneObservation.objects.filter(
                 Q(category__in=categories) | Q(category='') | Q(category__isnull=True),
                 Q(level__in=levels) | Q(level='') | Q(level__isnull=True)
             ).all()
-            drone_ser = GetDroneObsSerializer(drone_obs, many=True)
+            """
+            drone_ser = GetDronePhotosSerializer(drone_photos, many=True)
             data['Drone'] = drone_ser.data
 
 

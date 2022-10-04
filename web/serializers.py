@@ -1,8 +1,5 @@
 from rest_framework import serializers
 
-from drone.models import DroneObservation
-from drone.serializers import GetObservationsSerializer
-
 
 class GetObservationsFiltersSerializer(serializers.Serializer):
     categories = serializers.CharField(allow_blank=True)
