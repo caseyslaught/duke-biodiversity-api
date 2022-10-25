@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from drone.models import DroneFlight, DroneIdentification, DroneObservation, DronePhoto, DroneVehicle
+from drone.models import DroneFlight, DroneIdentification, DroneMedia, DroneObservation, DroneVehicle
 
 
 @admin.register(DroneFlight)
@@ -33,9 +33,9 @@ class DroneObservationAdmin(admin.ModelAdmin):
     exclude = ['datetime_updated']
 
 
-@admin.register(DronePhoto)
-class DronePhotoAdmin(admin.ModelAdmin):
-    list_display = ['datetime_created', 'uid']
+@admin.register(DroneMedia)
+class DroneMediaAdmin(admin.ModelAdmin):
+    list_display = ['datetime_created', 'uid', 'geometry']
     search_fields = ['description']
     list_filter = []
     ordering = ['-datetime_created']

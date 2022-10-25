@@ -1,11 +1,10 @@
 from django.conf import settings
-import json
 import os
 from rest_framework import permissions, status, generics
 from rest_framework.response import Response
 
 from drone import serializers
-from drone.models import DroneFlight, DronePhoto, DroneVehicle
+from drone.models import DroneFlight, DroneMedia, DronePhoto, DroneVehicle
 from RainforestApi.common.aws import s3
 
 
@@ -20,22 +19,63 @@ class CreateDroneFlightView(generics.GenericAPIView):
 
         data = serializer.validated_data
         drone_id = data['drone_id']
-        pilot_name = data['pilot_name']
-        # log_file = data['log_file']
+        pilot_name = data.get('pilot_name')
 
         try:
             drone = DroneVehicle.objects.get(drone_id=drone_id)
         except DroneVehicle.DoesNotExist:
             drone = DroneVehicle.objects.create(drone_id=drone_id)
 
-        flight = DroneFlight.objects.create(drone=drone, pilot_name=pilot_name) # TODO: add flight_path
+        flight = DroneFlight.objects.create(drone=drone, pilot_name=pilot_name)
 
         return Response({'flight_uid': flight.uid}, status=status.HTTP_201_CREATED)
 
 
-class CreateDronePhotoView(generics.GenericAPIView):
+class CreateDroneMediaView(generics.GenericAPIView):
+    """
+    Main view for adding media and photos.
+    """
+    
+    permission_classes = [permissions.AllowAny]
+    serializer_class = serializers.CreateDroneMediaSerializer
 
-    permission_classes = [permissions.AllowAny] # IsAuthenticated disabled for now
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        valid_data = serializer.validated_data
+        flight_uid = valid_data['flight_uid']
+        medias = valid_data['data']
+
+        try:
+            flight = DroneFlight.objects.get(uid=flight_uid)
+        except DroneFlight.DoesNotExist:
+            return Response({'error': 'flight_not_found'}, status=status.HTTP_400_BAD_REQUEST)
+
+        response = list()
+        for media in medias:
+
+            geometry = media['geometry']
+            local_path = media['path']
+            format = media['format']
+
+            m = DroneMedia.objects.create(
+                flight=flight,
+                local_path=local_path,
+                file_type=format,
+                geometry=geometry)
+
+            response.append({local_path: m.uid})
+
+        return Response(response, status=status.HTTP_201_CREATED)
+
+
+class CreateDronePhotoView(generics.GenericAPIView):
+    """
+    Deprecated view for adding photos.
+    """
+
+    permission_classes = [permissions.AllowAny]
     serializer_class = serializers.CreateDronePhotoSerializer
 
     def post(self, request):
@@ -86,13 +126,4 @@ class GetDroneFlightsView(generics.ListAPIView):
         return DroneFlight.objects.all()
 
 
-class GetDronePhotosView(generics.ListAPIView):
 
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = serializers.GetDronePhotosSerializer
-
-    # TODO: add filter for specific flight
-
-    def get_queryset(self):
-        return DronePhoto.objects.all()
-    
