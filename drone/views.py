@@ -18,6 +18,7 @@ class CreateDroneFlightView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         data = serializer.validated_data
+        run_id = data['run_id']
         drone_id = data['drone_id']
         pilot_name = data.get('pilot_name')
 
@@ -26,7 +27,7 @@ class CreateDroneFlightView(generics.GenericAPIView):
         except DroneVehicle.DoesNotExist:
             drone = DroneVehicle.objects.create(drone_id=drone_id)
 
-        flight = DroneFlight.objects.create(drone=drone, pilot_name=pilot_name)
+        flight = DroneFlight.objects.create(drone=drone, run_id=run_id, pilot_name=pilot_name)
 
         return Response({'flight_uid': flight.uid}, status=status.HTTP_201_CREATED)
 

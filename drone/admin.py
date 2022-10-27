@@ -5,7 +5,7 @@ from drone.models import DroneFlight, DroneIdentification, DroneMedia, DroneObse
 
 @admin.register(DroneFlight)
 class DroneFlightAdmin(admin.ModelAdmin):
-    list_display = ['datetime_created', 'uid']
+    list_display = ['datetime_created', 'uid', 'run_id']
     search_fields = []
     list_filter = []
     ordering = ['-datetime_created']

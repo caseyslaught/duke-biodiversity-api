@@ -8,14 +8,12 @@ from drone.models import DroneFlight, DroneMedia, DroneObservation, DronePhoto, 
 
 class CreateDroneFlightSerializer(serializers.Serializer):
 
+    run_id = serializers.CharField()
     drone_id = serializers.CharField()
     pilot_name = serializers.CharField(allow_blank=True, allow_null=True)
 
     class Meta:
         ref_name = 'DroneAddFlightSerializer'
-
-
-# Geo-field...
 
 
 class CreateMediaSerializer(serializers.Serializer):
@@ -26,10 +24,10 @@ class CreateMediaSerializer(serializers.Serializer):
     # lat = serializers.DecimalField(max_digits=12, decimal_places=6)
     # lng = serializers.DecimalField(max_digits=12, decimal_places=6)
     # alt = serializers.DecimalField(max_digits=10, decimal_places=2)
-    geometry = serializers.CharField() # geojson
-
+    
     path = serializers.CharField()
     format = serializers.CharField() # jpg, png, mp4
+    geometry = serializers.CharField() # geojson
     datetime_recorded = serializers.DateTimeField()
 
 
