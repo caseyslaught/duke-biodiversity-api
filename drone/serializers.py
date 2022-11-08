@@ -21,10 +21,6 @@ class CreateMediaSerializer(serializers.Serializer):
     Sub-serializer for creating a single media.
     """
     
-    # lat = serializers.DecimalField(max_digits=12, decimal_places=6)
-    # lng = serializers.DecimalField(max_digits=12, decimal_places=6)
-    # alt = serializers.DecimalField(max_digits=10, decimal_places=2)
-    
     path = serializers.CharField()
     format = serializers.CharField() # jpg, png, mp4
     geometry = serializers.CharField() # geojson
@@ -52,13 +48,15 @@ class GetDroneVehicleSerializer(serializers.ModelSerializer):
         fields = [
             "uid",
             "name",
-            "drone_id"
+            "drone_id",
+            "make",
+            "model"
         ]
 
 
 class GetMediaSerializer(serializers.ModelSerializer):
     """
-    Main serializer for getting media.
+    Main serializer for getting individual media.
     """
 
     class Meta:
@@ -66,11 +64,10 @@ class GetMediaSerializer(serializers.ModelSerializer):
         fields = [
             'uid',
             'datetime_recorded',
-            'latitude',
-            'longitude',
-            'altitude',
             'local_path',
-            'file_type'
+            'file_type',
+            's3_object_key',
+            'geometry',
         ]
 
 

@@ -4,9 +4,11 @@ from rest_framework import permissions, status, generics
 from rest_framework.response import Response
 
 from drone import serializers
-from drone.models import DroneFlight, DroneMedia, DronePhoto, DroneVehicle
+from drone.models import DroneFlight, DroneMedia, DroneObservation, DronePhoto, DroneVehicle
 from RainforestApi.common.aws import s3
 
+
+### CREATE
 
 class CreateDroneFlightView(generics.GenericAPIView):
 
@@ -16,12 +18,12 @@ class CreateDroneFlightView(generics.GenericAPIView):
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
+        
         data = serializer.validated_data
         run_id = data['run_id']
         drone_id = data['drone_id']
         pilot_name = data.get('pilot_name')
-
+        
         try:
             drone = DroneVehicle.objects.get(drone_id=drone_id)
         except DroneVehicle.DoesNotExist:
@@ -118,6 +120,8 @@ class CreateDronePhotoView(generics.GenericAPIView):
         return Response(status=status.HTTP_201_CREATED)
 
 
+### GET
+
 class GetDroneFlightsView(generics.ListAPIView):
     
     permission_classes = [permissions.AllowAny]
@@ -127,4 +131,31 @@ class GetDroneFlightsView(generics.ListAPIView):
         return DroneFlight.objects.all()
 
 
+class GetDroneMediaView(generics.ListAPIView):
+    
+    permission_classes = [permissions.AllowAny]
+    serializer_class = serializers.GetMediaSerializer
+
+    def get_queryset(self):
+        # TODO: do some filtering by flight_uid
+        return DroneMedia.objects.all()
+
+
+class GetDroneObservationsView(generics.ListAPIView):
+
+    permission_classes = [permissions.AllowAny]
+    serializer_class = serializers.GetDroneObservationsSerializer
+
+    def get_queryset(self):
+        # TODO: do some filtering by flight_uid
+        return DroneObservation.objects.all()
+
+
+class GetDroneVehiclesView(generics.ListAPIView):
+    
+    permission_classes = [permissions.AllowAny]
+    serializer_class = serializers.GetDroneVehicleSerializer
+
+    def get_queryset(self):
+        return DroneVehicle.objects.all()
 

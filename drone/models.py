@@ -10,8 +10,11 @@ class DroneVehicle(models.Model):
     datetime_updated = models.DateTimeField(null=True)
     uid = models.UUIDField(unique=True, editable=False, default=uuid.uuid4)
 
-    name = models.CharField(max_length=100, blank=True, null=True)
-    drone_id = models.CharField(max_length=100, blank=True, null=True)
+    name = models.CharField(max_length=100, blank=True, null=True) # human name
+    drone_id = models.CharField(max_length=100) # friendly_name
+
+    make = models.CharField(max_length=100, blank=True, null=True)
+    model = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self) -> str:
         return f'{self.drone_id} - {self.name}'
@@ -59,6 +62,7 @@ class DroneMedia(models.Model):
     s3_object_key = models.CharField(max_length=250, blank=True, null=True)
 
     geometry = models.TextField(null=True) # geojson
+    
     # using geometry instead of individual coords...
     latitude = models.DecimalField(max_digits=10, decimal_places=6, null=True)
     longitude = models.DecimalField(max_digits=10, decimal_places=6, null=True)
