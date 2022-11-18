@@ -5,6 +5,16 @@ from drone.models import DroneFlight, DroneMedia, DroneObservation, DronePhoto, 
 
 
 ### CREATE
+class CreateDroneVehicleSerializer(serializers.Serializer):
+
+    name = serializers.CharField()
+    drone_id = serializers.CharField()
+    make = serializers.CharField(allow_blank=True, allow_null=True)
+    model = serializers.CharField(allow_blank=True, allow_null=True)
+
+    class Meta:
+        ref_name = 'DroneAddVehicleSerializer'
+
 
 class CreateDroneFlightSerializer(serializers.Serializer):
 
