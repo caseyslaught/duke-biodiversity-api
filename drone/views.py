@@ -10,6 +10,25 @@ from RainforestApi.common.aws import s3
 
 ### CREATE
 
+class CreateDroneVehicleView(generics.GenericAPIView):
+
+    permission_classes = [permissions.AllowAny] # IsAuthenticated disabled for now
+    serializer_class = serializers.CreateDroneVehicleSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        data = serializer.validated_data
+        drone_id = data['drone_id']
+        name = data['name']
+        make = data['make']
+        model = data['model']
+        
+        drone = DroneVehicle.objects.create(drone_id=drone_id, name=name, make=make, model=model)
+
+        return Response({'drone_uid': drone.uid}, status=status.HTTP_201_CREATED)
+
 class CreateDroneFlightView(generics.GenericAPIView):
 
     permission_classes = [permissions.AllowAny] # IsAuthenticated disabled for now
@@ -22,12 +41,12 @@ class CreateDroneFlightView(generics.GenericAPIView):
         data = serializer.validated_data
         run_id = data['run_id']
         drone_id = data['drone_id']
-        pilot_name = data.get('pilot_name')
+        pilot_name = data['pilot_name']
         
         try:
             drone = DroneVehicle.objects.get(drone_id=drone_id)
         except DroneVehicle.DoesNotExist:
-            drone = DroneVehicle.objects.create(drone_id=drone_id)
+            return Response(data='Drone with id: {} does not exist.'.format(drone_id), status=status.HTTP_400_BAD_REQUEST)
 
         flight = DroneFlight.objects.create(drone=drone, run_id=run_id, pilot_name=pilot_name)
 
@@ -61,12 +80,14 @@ class CreateDroneMediaView(generics.GenericAPIView):
             geometry = media['geometry']
             local_path = media['path']
             format = media['format']
+            datetime_recorded = media['datetime_recorded']
 
             m = DroneMedia.objects.create(
                 flight=flight,
                 local_path=local_path,
                 file_type=format,
-                geometry=geometry)
+                geometry=geometry,
+                datetime_recorded=datetime_recorded)
 
             response.append({local_path: m.uid})
 

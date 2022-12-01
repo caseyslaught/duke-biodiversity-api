@@ -5,10 +5,10 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-AWS_ACCESS_KEY_ID=os.environ['DUKE_RAINFOREST_AWS_ACCESS_KEY']
-AWS_SECRET_ACCESS_KEY=os.environ['DUKE_RAINFOREST_AWS_SECRET_KEY']
-AWS_REGION="us-east-1"
-AWS_S3_DATA_BUCKET = 'duke-rainforest-data'
+# AWS_ACCESS_KEY_ID=os.environ['DUKE_RAINFOREST_AWS_ACCESS_KEY']
+# AWS_SECRET_ACCESS_KEY=os.environ['DUKE_RAINFOREST_AWS_SECRET_KEY']
+# AWS_REGION="us-east-1"
+# AWS_S3_DATA_BUCKET = 'duke-rainforest-data'
 
 INSTALLED_APPS = [
     'jet',
